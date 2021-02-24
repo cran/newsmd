@@ -1,0 +1,15 @@
+2acaa50ff7b7bdc3a53cd85e3f9f20f0 *DESCRIPTION
+e57ca36be8712c2445f5f3d759f5f645 *LICENSE
+24adc711fd98cff036f3f0ec07afe1bc *NAMESPACE
+f05dd8be3d70adb7ebd7ee43151ea5f8 *NEWS.md
+cb5c02fa91e0374b386fdc2bf1832e5e *R/newsmd.R
+4453e89615c62d9ebd2d9e3adb6de581 *build/vignette.rds
+3c9e2d06e8560272e30c98b0c827478b *inst/doc/NEWSMD-CREATION.R
+0b243f07431b3feb54b9ba8ec722c4da *inst/doc/NEWSMD-CREATION.Rmd
+576f4b489a98ebdb18544f83bdf5f490 *inst/doc/NEWSMD-CREATION.html
+91cfd5673284e7a66c7a4c2dccd41065 *man/news.Rd
+7678de93b3f99128263074bf58193416 *man/newsmd.Rd
+3e0327d3788bf71a455adff991980736 *tests/testthat.R
+cb726b5dcd607a482f6d3ce937464ba8 *tests/testthat/test-build.R
+61de997e7d54503fac44455c8026c7af *tests/testthat/test-news-creation.R
+0b243f07431b3feb54b9ba8ec722c4da *vignettes/NEWSMD-CREATION.Rmd
