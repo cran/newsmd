@@ -1,14 +1,11 @@
 Package: newsmd
 Title: Creation of NEWS.md File
-Version: 0.3.1
-Date: 2021-02-23
+Version: 0.4.0
+Date: 2022-02-16
 Authors@R: 
-    person(given = "Jakob",
-           family = "Gepp",
-           role = c("cre", "aut"),
-           email = "jakob.gepp@yahoo.de")
-Description: Adding updates (version or bullet points) to the
-    NEWS.md file.
+    person("Jakob", "Gepp", , "jakob.gepp@yahoo.de", role = c("cre", "aut"))
+Description: Adding updates (version or bullet points) to the NEWS.md
+    file.
 License: MIT + file LICENSE
 URL: https://github.com/Dschaykib/newsmd
 BugReports: https://github.com/Dschaykib/newsmd/issues
@@ -18,11 +15,10 @@ Suggests: desc, knitr, lintr, rmarkdown, testthat
 VignetteBuilder: knitr
 Encoding: UTF-8
 Language: en-GB
-LazyData: true
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 NeedsCompilation: no
-Packaged: 2021-02-23 16:20:56 UTC; jakobgepp
+Packaged: 2022-02-16 08:21:20 UTC; jakobgepp
 Author: Jakob Gepp [cre, aut]
 Maintainer: Jakob Gepp <jakob.gepp@yahoo.de>
 Repository: CRAN
-Date/Publication: 2021-02-24 10:50:02 UTC
+Date/Publication: 2022-02-16 10:10:02 UTC
