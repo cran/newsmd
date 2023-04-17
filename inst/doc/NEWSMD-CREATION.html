@@ -14,19 +14,16 @@
 
 <title>An R package to create NEWS.md files</title>
 
-<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
-// v0.0.1
-// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
-
-document.addEventListener('DOMContentLoaded', function() {
-  const codeList = document.getElementsByClassName("sourceCode");
-  for (var i = 0; i < codeList.length; i++) {
-    var linkList = codeList[i].getElementsByTagName('a');
-    for (var j = 0; j < linkList.length; j++) {
-      if (linkList[j].innerHTML === "") {
-        linkList[j].setAttribute('aria-hidden', 'true');
-      }
-    }
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
   }
 });
 </script>
@@ -41,6 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </style>
 
 
+
 <style type="text/css">
   code {
     white-space: pre;
@@ -50,19 +48,19 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 </style>
 <style type="text/css" data-origin="pandoc">
-code.sourceCode > span { display: inline-block; line-height: 1.25; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-code.sourceCode > span:empty { height: 1.2em; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -82,7 +80,7 @@ pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-le
 div.sourceCode
   {   }
 @media screen {
-code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -122,13 +120,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -336,11 +341,27 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-<p>A while back, I started to create an R package that would help me and my colleagues at <a href="https://www.statworx.com/">STATWORX</a> with our daily work. After writing the <code>DESCRIPTION</code> file, I did not want to do this ever again. I found the <code>desc</code> package which let’s you parse, manipulate and reformat the <code>DESCRIPTION</code> file via some functions and ergo a script. If you want more info on that, check out their <a href="https://github.com/r-lib/desc">GitHub repository</a>. However, I was too lazy still, because I had to manually write the <code>NEWS</code> file.</p>
-<p>I longed for the functionality of editing the <code>NEWS</code> file in the same script I built for the <code>DESCRIPTION</code> file. Since I could not find anything - and already was in a mood for programming - I wrote one my self. In this vignette, I will briefly explain what the package does. If you want to create your <code>NEWS</code> file from your git commits, than have a look at the <a href="https://github.com/cynkra/fledge">fledge</a> package.</p>
+<p>A while back, I started to create an R package that would help me and
+my colleagues at <a href="https://www.statworx.com/">statworx</a> with
+our daily work. After writing the <code>DESCRIPTION</code> file, I did
+not want to do this ever again. I found the <code>desc</code> package
+which let’s you parse, manipulate and reformat the
+<code>DESCRIPTION</code> file via some functions and ergo a script. If
+you want more info on that, check out their <a href="https://github.com/r-lib/desc">GitHub repository</a>. However, I
+was too lazy still, because I had to manually write the
+<code>NEWS</code> file.</p>
+<p>I longed for the functionality of editing the <code>NEWS</code> file
+in the same script I built for the <code>DESCRIPTION</code> file. Since
+I could not find anything - and already was in a mood for programming -
+I wrote one my self. In this vignette, I will briefly explain what the
+package does. If you want to create your <code>NEWS</code> file from
+your git commits, than have a look at the <a href="https://github.com/cynkra/fledge">fledge</a> package.</p>
 <div id="usage-of-newsmd" class="section level2">
 <h2>Usage of <code>newsmd</code></h2>
-<p>The main part of the package is the <code>news</code> object, which is an R6 class object and contains the text for the <code>NEWS.md</code> file. You can add versions, subtitles and bullet points to it via the object’s methods.</p>
+<p>The main part of the package is the <code>news</code> object, which
+is an R6 class object and contains the text for the <code>NEWS.md</code>
+file. You can add versions, subtitles and bullet points to it via the
+object’s methods.</p>
 <div id="initialise-a-new-object" class="section level3">
 <h3>Initialise a new object</h3>
 <p>To initialise a new object you can use two different ways:</p>
@@ -351,13 +372,13 @@ library(newsmd)
 my_news &lt;- news$new()
 my_news &lt;- newsmd()</code></pre>
 <p>The default text contains markdown code and looks like this:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co">## version 0.0.0.9000</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a></span>
-<span id="cb2-3"><a href="#cb2-3"></a><span class="op">---</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a></span>
-<span id="cb2-5"><a href="#cb2-5"></a><span class="co">### NEWS.md setup</span></span>
-<span id="cb2-6"><a href="#cb2-6"></a></span>
-<span id="cb2-7"><a href="#cb2-7"></a><span class="op">-</span><span class="st"> </span>added NEWS.md creation with newsmd</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="do">## version 0.0.0.9000</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="sc">---</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="do">### NEWS.md setup</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="sc">-</span> added NEWS.md creation with newsmd</span></code></pre></div>
 </div>
 <div id="adding-a-the-next-version" class="section level3">
 <h3>Adding a the next version</h3>
@@ -366,47 +387,57 @@ my_news &lt;- newsmd()</code></pre>
 </div>
 <div id="adding-a-new-subtitle" class="section level3">
 <h3>Adding a new subtitle</h3>
-<p>With <code>add_subtitle</code> you can add a new subtitle, where the following bullet points will be under.</p>
+<p>With <code>add_subtitle</code> you can add a new subtitle, where the
+following bullet points will be under.</p>
 <pre><code>my_news$add_subtitle(&quot;Bugfixes&quot;)</code></pre>
 </div>
 <div id="adding-more-bullets" class="section level3">
 <h3>Adding more bullets</h3>
-<p>With <code>add_bullet</code> you can add more bullet points to the latest version and latest subtitle.</p>
+<p>With <code>add_bullet</code> you can add more bullet points to the
+latest version and latest subtitle.</p>
 <pre><code>my_news$add_bullet(c(&quot;this is point 1&quot;, &quot;this is point 2&quot;))</code></pre>
 </div>
 <div id="getting-the-whole-text" class="section level3">
 <h3>Getting the whole text</h3>
-<p>After these few changes, let’s see how the file looks. The <code>get_text</code> method will return each single line of the file. Alternatively you can just use <code>print(my_news)</code>.</p>
+<p>After these few changes, let’s see how the file looks. The
+<code>get_text</code> method will return each single line of the file.
+Alternatively you can just use <code>print(my_news)</code>.</p>
 <pre><code>my_news$get_text()</code></pre>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a> [<span class="dv">1</span>] <span class="st">&quot;## version 0.0.1&quot;</span>                    </span>
-<span id="cb7-2"><a href="#cb7-2"></a> [<span class="dv">2</span>] <span class="st">&quot;&quot;</span>                                    </span>
-<span id="cb7-3"><a href="#cb7-3"></a> [<span class="dv">3</span>] <span class="st">&quot;---&quot;</span>                                 </span>
-<span id="cb7-4"><a href="#cb7-4"></a> [<span class="dv">4</span>] <span class="st">&quot;&quot;</span>                                    </span>
-<span id="cb7-5"><a href="#cb7-5"></a> [<span class="dv">5</span>] <span class="st">&quot;&quot;</span>                                    </span>
-<span id="cb7-6"><a href="#cb7-6"></a> [<span class="dv">6</span>] <span class="st">&quot;### Bugfixes&quot;</span>                        </span>
-<span id="cb7-7"><a href="#cb7-7"></a> [<span class="dv">7</span>] <span class="st">&quot;&quot;</span>                                    </span>
-<span id="cb7-8"><a href="#cb7-8"></a> [<span class="dv">8</span>] <span class="st">&quot;- this is point 1&quot;</span>                   </span>
-<span id="cb7-9"><a href="#cb7-9"></a> [<span class="dv">9</span>] <span class="st">&quot;- this is point 2&quot;</span>                   </span>
-<span id="cb7-10"><a href="#cb7-10"></a>[<span class="dv">10</span>] <span class="st">&quot;&quot;</span>                                    </span>
-<span id="cb7-11"><a href="#cb7-11"></a>[<span class="dv">11</span>] <span class="st">&quot;&quot;</span>                                    </span>
-<span id="cb7-12"><a href="#cb7-12"></a>[<span class="dv">12</span>] <span class="st">&quot;## version 0.0.0.9000&quot;</span>               </span>
-<span id="cb7-13"><a href="#cb7-13"></a>[<span class="dv">13</span>] <span class="st">&quot;&quot;</span>                                    </span>
-<span id="cb7-14"><a href="#cb7-14"></a>[<span class="dv">14</span>] <span class="st">&quot;---&quot;</span>                                 </span>
-<span id="cb7-15"><a href="#cb7-15"></a>[<span class="dv">15</span>] <span class="st">&quot;&quot;</span>                                    </span>
-<span id="cb7-16"><a href="#cb7-16"></a>[<span class="dv">16</span>] <span class="st">&quot;### NEWS.md setup&quot;</span>                   </span>
-<span id="cb7-17"><a href="#cb7-17"></a>[<span class="dv">17</span>] <span class="st">&quot;&quot;</span>                                    </span>
-<span id="cb7-18"><a href="#cb7-18"></a>[<span class="dv">18</span>] <span class="st">&quot;- added NEWS.md creation with newsmd&quot;</span></span>
-<span id="cb7-19"><a href="#cb7-19"></a>[<span class="dv">19</span>] <span class="st">&quot;&quot;</span> </span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a> [<span class="dv">1</span>] <span class="st">&quot;## version 0.0.1&quot;</span>                    </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a> [<span class="dv">2</span>] <span class="st">&quot;&quot;</span>                                    </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a> [<span class="dv">3</span>] <span class="st">&quot;---&quot;</span>                                 </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a> [<span class="dv">4</span>] <span class="st">&quot;&quot;</span>                                    </span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a> [<span class="dv">5</span>] <span class="st">&quot;&quot;</span>                                    </span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a> [<span class="dv">6</span>] <span class="st">&quot;### Bugfixes&quot;</span>                        </span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a> [<span class="dv">7</span>] <span class="st">&quot;&quot;</span>                                    </span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a> [<span class="dv">8</span>] <span class="st">&quot;- this is point 1&quot;</span>                   </span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a> [<span class="dv">9</span>] <span class="st">&quot;- this is point 2&quot;</span>                   </span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>[<span class="dv">10</span>] <span class="st">&quot;&quot;</span>                                    </span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>[<span class="dv">11</span>] <span class="st">&quot;&quot;</span>                                    </span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>[<span class="dv">12</span>] <span class="st">&quot;## version 0.0.0.9000&quot;</span>               </span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>[<span class="dv">13</span>] <span class="st">&quot;&quot;</span>                                    </span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>[<span class="dv">14</span>] <span class="st">&quot;---&quot;</span>                                 </span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>[<span class="dv">15</span>] <span class="st">&quot;&quot;</span>                                    </span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>[<span class="dv">16</span>] <span class="st">&quot;### NEWS.md setup&quot;</span>                   </span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>[<span class="dv">17</span>] <span class="st">&quot;&quot;</span>                                    </span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>[<span class="dv">18</span>] <span class="st">&quot;- added NEWS.md creation with newsmd&quot;</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>[<span class="dv">19</span>] <span class="st">&quot;&quot;</span> </span></code></pre></div>
 </div>
 <div id="writing-the-news.md-file" class="section level3">
 <h3>Writing the NEWS.md file</h3>
-<p>At last, with <code>write</code> you can save all your changes into the <code>NEWS.md</code> file.</p>
+<p>At last, with <code>write</code> you can save all your changes into
+the <code>NEWS.md</code> file.</p>
 <pre><code>my_news$write()</code></pre>
 </div>
 </div>
 <div id="combination-with-the-desc-package" class="section level2">
 <h2>Combination with the <code>desc</code> package</h2>
-<p>The goal of this package is to update the <code>NEWS.md</code> file in addition to the <code>DESCRIPTION</code> file. To optimize the workflow I suggest using the <code>desc</code> package, too. For example instead of manually defining the version number, you can use <code>desc_bump_version()</code> and <code>get_version()</code> of the <code>desc</code> package:</p>
+<p>The goal of this package is to update the <code>NEWS.md</code> file
+in addition to the <code>DESCRIPTION</code> file. To optimize the
+workflow I suggest using the <code>desc</code> package, too. For example
+instead of manually defining the version number, you can use
+<code>desc_bump_version()</code> and <code>get_version()</code> of the
+<code>desc</code> package:</p>
 <pre><code>my_desc$bump_version(&quot;patch&quot;)
 my_news$add_version(my_desc$get_version())
 
@@ -415,7 +446,9 @@ my_news$add_bullet(&quot;added automated creation for DESCRIPTION and NEWS.md&qu
 </div>
 <div id="conclusion" class="section level2">
 <h2>Conclusion</h2>
-<p>I hope this little package will be of help to some of you. If you find some bugs or have ideas that would improve the usage and functionality, I would be pleased if you let me know <a href="https://github.com/Dschaykib/newsmd/issues">on my GitHub</a>.</p>
+<p>I hope this little package will be of help to some of you. If you
+find some bugs or have ideas that would improve the usage and
+functionality, I would be pleased if you let me know <a href="https://github.com/Dschaykib/newsmd/issues">on my GitHub</a>.</p>
 </div>
 
 

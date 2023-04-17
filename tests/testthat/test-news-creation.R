@@ -1,6 +1,6 @@
-context("test news creation")
+testthat::context("test news creation")
 
-test_that("given file is checked", {
+testthat::test_that("given file is checked", {
   tmp_file <- file.path(paste0(tempdir(), "/tmp_NEWS.md"))
 
   # no version
@@ -23,7 +23,7 @@ test_that("given file is checked", {
            "",
            "### NEWS.md setup",
            "",
-           "- added NEWS.md creation with newsmd",
+           "- added NEWS.md creation with [newsmd](https://github.com/Dschaykib/newsmd)",
            "",
            "old NEWS.md",
            "# version 1.0",
@@ -43,7 +43,7 @@ test_that("given file is checked", {
            "",
            "### NEWS.md setup",
            "",
-           "- added NEWS.md creation with newsmd",
+           "- added NEWS.md creation with [newsmd](https://github.com/Dschaykib/newsmd)",
            "",
            "old NEWS.md",
            "# version 1.0",
@@ -66,7 +66,7 @@ test_that("given file is checked", {
            "",
            "### NEWS.md setup",
            "",
-           "- added NEWS.md creation with newsmd",
+           "- added NEWS.md creation with [newsmd](https://github.com/Dschaykib/newsmd)",
            "",
            "old NEWS.md",
            "# version 1.0.0.9000",
